@@ -1,0 +1,41 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Verify Docker and Docker Compose Installation
+        run: |
+          docker --version
+          docker-compose --version
+
+      - name: Copy .env.example to .env
+        run: cp .env.example .env
+
+      - name: Debug - Check files
+        run: ls -R
+
+      - name: Debug - Check scripts folder
+        run: ls -l src/scripts  # Ensure the file is inside src/scripts
+
+      - name: Set Execution Permission for Integration Script
+        run: chmod +x src/scripts/run-integration.sh
+
+      - name: Run Integration Script
+        run: npm run test:integration
